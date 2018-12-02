@@ -55,6 +55,9 @@ isWin b = winRows b || winCols b || winDiags b
         winCols = threeInARow . getCols
         winDiags = threeInARow . getDiags
 
+isEnd :: Board -> Bool
+isEnd b@(Board cs) = isWin b || filter (==Blank) cs == []
+
 getAll :: Board -> Cell -> [Int]
 getAll (Board cs) c = findIndices (==c) cs
 
@@ -80,19 +83,26 @@ allMoves b
 emptyBoard :: Board
 emptyBoard = Board $ replicate 9 Blank
 
+allStates :: [Board]
+allStates = allMoves emptyBoard
+
+numStates :: Int
+numStates = length allStates
+
 allGames :: [Board]
-allGames = allMoves emptyBoard
+allGames = filter isEnd allStates
 
 numGames :: Int
 numGames = length allGames
 
 allBoards :: Set Board
-allBoards = fromList allGames
+allBoards = fromList allStates
 
 numBoards :: Int
 numBoards = size allBoards
 
 main = do
+    putStrLn $ "Number of states: " ++ show numStates
     putStrLn $ "Number of games: " ++ show numGames
     putStrLn $ "Number of boards: " ++ show numBoards
 
